@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Cartoon Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg,#1e3c72,#2a5298);
+      margin: 0;
+      padding: 20px;
+      color: white;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .app {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      color: black;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #2a5298;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1e3c72;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 15px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background: #2a5298;
+      color: white;
+    }
+
+    .delete-btn {
+      background: red;
+      border: none;
+      color: white;
+      padding: 5px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .search {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🎬 Cartoon Manager</h1>
+
+<div class="app">
+
+  <input class="search" type="text" id="search" placeholder="Search Cartoon..." onkeyup="searchCartoon()">
+
+  <input type="text" id="name" placeholder="Cartoon Name">
+
+  <select id="category">
+    <option>Comedy</option>
+    <option>Adventure</option>
+    <option>Horror</option>
+    <option>Action</option>
+  </select>
+
+  <input type="text" id="platform" placeholder="Platform (Netflix, YouTube...)">
+
+  <select id="type">
+    <option>Free</option>
+    <option>Paid</option>
+  </select>
+
+  <button onclick="addCartoon()">Add Cartoon</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Platform</th>
+        <th>Type</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody id="cartoonList"></tbody>
+  </table>
+
+</div>
+
+<script>
+
+let cartoons = JSON.parse(localStorage.getItem("cartoons")) || [];
+
+function saveData() {
+  localStorage.setItem("cartoons", JSON.stringify(cartoons));
+}
+
+function displayCartoons() {
+  let table = document.getElementById("cartoonList");
+  table.innerHTML = "";
+
+  cartoons.forEach((cartoon, index) => {
+    let row = table.insertRow();
+    row.insertCell(0).innerHTML = cartoon.name;
+    row.insertCell(1).innerHTML = cartoon.category;
+    row.insertCell(2).innerHTML = cartoon.platform;
+    row.insertCell(3).innerHTML = cartoon.type;
+    row.insertCell(4).innerHTML =
+      `<button class="delete-btn" onclick="deleteCartoon(${index})">X</button>`;
+  });
+}
+
+function addCartoon() {
+  let name = document.getElementById("name").value;
+  let category = document.getElementById("category").value;
+  let platform = document.getElementById("platform").value;
+  let type = document.getElementById("type").value;
+
+  if (!name || !platform) {
+    alert("Fill all fields!");
+    return;
+  }
+
+  cartoons.push({ name, category, platform, type });
+  saveData();
+  displayCartoons();
+
+  document.getElementById("name").value = "";
+  document.getElementById("platform").value = "";
+}
+
+function deleteCartoon(index) {
+  cartoons.splice(index, 1);
+  saveData();
+  displayCartoons();
+}
+
+function searchCartoon() {
+  let input = document.getElementById("search").value.toLowerCase();
+  let rows = document.querySelectorAll("#cartoonList tr");
+
+  rows.forEach(row => {
+    let name = row.cells[0].innerText.toLowerCase();
+    row.style.display = name.includes(input) ? "" : "none";
+  });
+}
+
+displayCartoons();
+
+</script>
+
+</body>
+</html>
